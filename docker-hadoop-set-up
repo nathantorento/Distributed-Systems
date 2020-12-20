@@ -1,0 +1,52 @@
+# Make sure you have all these docker components
+docker - version
+docker-compose - version
+docker-machine –version
+# Create Dockerized web server on http://localhost to check everything after running all the code
+docker run -d -p 80:80 - name myserver nginx
+# Download the docker-hadoop file
+git clone git@github.com:big-data-europe/docker-hadoop.git
+# If the above code returns permission errors for you, feel free to follow these instructions if you're feeling fancy, otherwise just download the docker-hadoop folder it directly from the GitHub repository
+# Error: Permission denied (publickey)
+# Change directory to the docker-hadoop folder
+# change "the right directory" accordingly
+cd ~[the right directory]/docker-hadoop
+# Separately, open the docker-hadoop folder and open the docker-compose.yml file with the code below or manually through some text editor
+open docker-compose.yml
+# Change all the contents to the one in this GitHub link; don't forget to save!
+# BDE2020 Docker-compose.yml
+# Run the docker-compose.yml file with the code below and it will set up all your containers
+docker-compose up -d
+# Check that everything was setup properly below
+# You should see multiple containers: 3 of them should be datanodes
+docker ps
+# Go into the namenode container to run bash commands from it
+docker exec -it namenode bash
+# In the namenode container, create a directory called "input"
+mkdir input
+# We'll create two text files
+echo "Hello World" >input/f1.txt
+echo "Hello Docker" >input/f2.txt
+# Then we'll create an input directory on HDFS
+hadoop fs -mkdir -p input
+# Here, we'll put all the text files into the datanodes on HDFS
+# I'm not sure if we create replicas in each datanode, or it distributes the files as chunks into all three datanodes; this is a good thing to look into and clarify
+hdfs dfs -put ./input/* input
+# RUN IN NEW TERMINAL WINDOW, do not close the previous one
+# COPY the namenode ID then run the command somewhere
+# remember the IDs change every time you create them, so copy it each time
+docker container ls
+# Make sure you have a hadoop-mapreduce-examples-2.7.1-sources.jar file somewhere; if not, I've uploaded it here https://drive.google.com/file/d/1CngCLmaga4QkTmUW4MhUJ5wShhAs7e91/view?usp=sharing
+# Put it in the directory where your docker-hadoop folder is, and NOT the docker-hadoop folder itself
+# STILL IN THE NEW TERMINAL WINDOW
+# in the code below, change "namenodeid" and "the right directory" accordingly
+docker cp ~[the right directory]/hadoop-mapreduce-examples-2.7.1-sources.jar namenodeid:hadoop-mapreduce-examples-2.7.1-sources.jar
+# GO BACK TO YOUR NAMENODE CONTAINER and run the code below
+hadoop jar hadoop-mapreduce-examples-2.7.1-sources.jar org.apache.hadoop.examples.WordCount input output
+# Check the output below
+hdfs dfs -cat output/part-r-00000
+# If you run into errors, wanna do everything again, tweak the docker-compose.yml file like me, or are ready to simulate a "fault", then make sure to run the commands below; it will wipe all the containers and volumes clean;
+# to run docker-compose down, make sure you are currently in the docker-hadoop folder directory otherwise it won't run
+docker-compose down
+docker rm -f $(docker ps -a -q)
+docker volume rm $(docker volume ls -q)
