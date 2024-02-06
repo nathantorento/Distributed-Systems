@@ -1,7 +1,7 @@
 # Make sure you have all these docker components
-docker - version
-docker-compose - version
-docker-machine –version
+docker --version
+docker-compose --version
+docker-machine –-version
 # Create Dockerized web server on http://localhost to check everything after running all the code
 docker run -d -p 80:80 - name myserver nginx
 # Download the docker-hadoop file
@@ -10,9 +10,10 @@ git clone git@github.com:big-data-europe/docker-hadoop.git
 # Error: Permission denied (publickey)
 # Change directory to the docker-hadoop folder
 # change "the right directory" accordingly
-cd ~[the right directory]/docker-hadoop
+cd docker-hadoop
 # Separately, open the docker-hadoop folder and open the docker-compose.yml file with the code below or manually through some text editor
 open docker-compose.yml
+curl https://raw.githubusercontent.com/nathantorento/Distributed-Systems/main/docker-compose.yml -O
 # Change all the contents to the one in this GitHub link; don't forget to save!
 # BDE2020 Docker-compose.yml
 # Run the docker-compose.yml file with the code below and it will set up all your containers
